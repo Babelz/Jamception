@@ -20,7 +20,6 @@ public class Player1D : MonoBehaviour {
 	        foreach (GameObject computer in computers)
             {
                 Vector2 heading = computer.transform.position - transform.position;
-                float distance = heading.magnitude;
 
                 if (heading.sqrMagnitude < 0.25 && computer.GetComponent<Computer1D>().IsBugged())
                 {

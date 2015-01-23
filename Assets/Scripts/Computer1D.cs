@@ -4,8 +4,10 @@ using System.Collections;
 public class Computer1D : MonoBehaviour {
     public float minTime = 0.5f;
     public float maxTime = 5f;
+    public float scoreAmount = 1f;
 
     private float timer;
+    private float scoreTimer;
     private int state;
     private enum States { Normal, Bugged, BSOD };
 
@@ -13,19 +15,32 @@ public class Computer1D : MonoBehaviour {
 	void Start () {
         state = (int)States.Normal;
         timer = Random.Range(minTime, maxTime);
+        scoreTimer = 1;
 	}
 	
 	// Update is called once per frame
 	void Update () {
         timer -= Time.deltaTime;
 
-        if (timer < 0 && state == (int)States.Normal)
+        if (state == (int)States.Normal)
         {
-            gameObject.renderer.material.color = Color.green;
-            state = (int)States.Bugged;
-            timer = 3;
+            scoreTimer -= Time.deltaTime;
+
+            if (scoreTimer < 0)
+            {
+                GameObject statusBar = GameObject.FindGameObjectWithTag("StatusBar");
+                statusBar.GetComponent<Status1D>().addScore(scoreAmount);
+                scoreTimer = 1;
+            } 
+            else if (timer < 0)
+            {
+                gameObject.renderer.material.color = Color.green;
+                state = (int)States.Bugged;
+                timer = 3;
+            }
         }
-        else if (timer < 0 && state == (int)States.Bugged)
+        
+        if (timer < 0 && state == (int)States.Bugged)
         {
             gameObject.renderer.material.color = Color.blue;
             state = (int)States.BSOD;
@@ -36,6 +51,7 @@ public class Computer1D : MonoBehaviour {
             gameObject.renderer.material.color = Color.white;
             state = (int)States.Normal;
             timer = Random.Range(minTime, maxTime);
+            scoreTimer = 1;
         }
 	}
 
@@ -49,5 +65,6 @@ public class Computer1D : MonoBehaviour {
         gameObject.renderer.material.color = Color.white;
         state = (int)States.Normal;
         timer = Random.Range(minTime, maxTime);
+        scoreTimer = 1;
     }
 }

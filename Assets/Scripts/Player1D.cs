@@ -21,7 +21,6 @@ public class Player1D : MonoBehaviour {
             {
                 Vector2 heading = computer.transform.position - transform.position;
                 float distance = heading.magnitude;
-                Vector2 direction = heading / distance;
 
                 if (heading.sqrMagnitude < 0.25 && computer.GetComponent<Computer1D>().IsBugged())
                 {

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Player : MonoBehaviour {
+public class Player1D : MonoBehaviour {
 
     public float speed = 0.1f;
     public GameObject[] computers;
@@ -23,10 +23,10 @@ public class Player : MonoBehaviour {
                 float distance = heading.magnitude;
                 Vector2 direction = heading / distance;
 
-                if (heading.sqrMagnitude < 0.25 && computer.GetComponent<Computer>().IsBugged())
+                if (heading.sqrMagnitude < 0.25 && computer.GetComponent<Computer1D>().IsBugged())
                 {
                     computer.renderer.material.color = Color.gray;
-                    computer.GetComponent<Computer>().Fix();
+                    computer.GetComponent<Computer1D>().Fix();
                 }
             }
         }

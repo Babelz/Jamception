@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Computer : MonoBehaviour {
+public class Computer1D : MonoBehaviour {
     public float minTime = 0.5f;
     public float maxTime = 5f;
 

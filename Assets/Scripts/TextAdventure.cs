@@ -1,122 +1,186 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
+using System.Linq;
 
 using Random = System.Random;
 
-
-public enum JumpType
+public sealed class TextAdventure
 {
-    OnRightAnswer,
-    OnWrongAnswer,
-    Both
+    #region Vars
+    private readonly string[] wrongAnswerDialogs;
+    private readonly string finishedDialog;
+
+    private readonly List<TextNode> nodes;
+
+    private readonly Random random;
+
+    private TextNode currentNode;
+    private int index;
+    #endregion
+
+    #region Properties
+    public bool Finished
+    {
+        get
+        {
+            return index >= nodes.Count;
+        }
+    }
+    public string FininshedDialog
+    {
+        get
+        {
+            return finishedDialog;
+        }
+    }
+    public TextNode CurrentNode
+    {
+        get
+        {
+            return currentNode;
+        }
+    }
+    #endregion
+
+    public TextAdventure(List<TextNode> nodes, string[] wrongAnswerDialogs, string finishedDialog)
+    {
+        this.nodes = nodes;
+        this.wrongAnswerDialogs = wrongAnswerDialogs;
+        this.finishedDialog = finishedDialog;
+
+        currentNode = nodes[index];
+
+        random = new Random();
+    }
+
+    public void Reset()
+    {
+        index = 0;
+        currentNode = nodes[index];
+    }
+    public List<string> Play(string answer)
+    {
+        List<string> response = new List<string>();
+
+        if (Finished)
+        {
+            throw new InvalidOperationException("Adventure has been fininshed. Reset it to continue.");
+        }
+
+        // If right answer, continue.
+        if (currentNode.IsRightAnswer(answer))
+        {
+            // Add right answer dialog to response.
+            response.Add(currentNode.GetResponseString(answer));
+
+            int lastIndex = index;
+            index = currentNode.GetJumpIndex(answer);
+
+            if (index < 0)
+            {
+                // No jump. Just get next node.
+                index = ++lastIndex;
+            }
+
+            // If andventure is fininshed, add finished dialog and return response.
+            if (Finished)
+            {   
+                response.Add(finishedDialog);
+
+                return response;
+            }
+
+            currentNode = nodes[index];
+        }
+        else
+        {
+            response.Add(wrongAnswerDialogs[random.Next(0, wrongAnswerDialogs.Length - 1)]);
+        }
+
+        return response;
+    }
+}
+
+public static class AdventureBuilder
+{
+    public static Dictionary<string, int> CreateAnswers()
+    {
+        return new Dictionary<string, int>();
+    }
+    /// <summary>
+    /// Adds new answer to the dict.
+    /// </summary>
+    /// <param name="answer">Answer.</param>
+    /// <param name="jumpIndex">Jump index. -1 index means there will be no jump and next node will be selected upon right answer.</param>
+    public static Dictionary<string, int> AddAnswer(this Dictionary<string, int> dict, string answer, int jumpIndex = -1) 
+    {
+        dict.Add(answer, jumpIndex);
+
+        return dict;
+    }
 }
 
 public sealed class TextNode
 {
     #region Vars
-    public readonly string dialog;
-    public readonly string rightAnswer;
-    public readonly string rightAnswerDialog;
-    public readonly int jump;
-    public JumpType jumpType;
-    #endregion
+    // Jump index and answers.
+    private readonly Dictionary<string, int> answers;
+    private readonly string[] responses;
 
-    // -1 = no jump.
-
-    public TextNode(string dialog, string rightAnswer, string rightAnswerDialog, int jump = -1, JumpType jumpType = JumpType.OnRightAnswer)
-    {
-        this.dialog = dialog;
-        this.rightAnswer = rightAnswer;
-        this.rightAnswerDialog = rightAnswerDialog;
-        this.jump = jump;
-        this.jumpType = jumpType;
-    }
-}
-
-
-public sealed class TextAdventure
-{
-    #region Vars
-    private readonly string[] wrongAnswerResponses;
-    private readonly TextNode[] nodes;
-    private readonly Random random;
-
-    private TextNode current;
-
-    private int index;
+    private readonly string rightAnswerDialog;
+    private readonly string enterDialog;
     #endregion
 
     #region Properties
-    public bool AtEnd
+    public string EnterDialog
     {
         get
         {
-            return index >= nodes.Length;
-        }
-    }
-    public string CurrentDialog
-    {
-        get
-        {
-            return current.dialog;
+            return enterDialog;
         }
     }
     #endregion
 
-    public TextAdventure(TextNode[] nodes, string[] wrongAnswerResponses)
+    /// <summary>
+    /// Initializes new instance of TextNode.
+    /// </summary>
+    /// <param name="enterDialog">Dialog wich will be played when this node is entered.</param>
+    /// <param name="responses">Dialogs displayed when player gives the right answer.</param>
+    /// <param name="answers">Answers and their jump indexes. -1 index means there will be no jump.</param>
+    public TextNode(string enterDialog, string[] responses, Dictionary<string, int> answers)
     {
-        this.nodes = nodes;
-        this.wrongAnswerResponses = wrongAnswerResponses;
+        if (responses.Length != answers.Count)
+        {
+            throw new InvalidOperationException("There must be same number of responses as there are answers.");
+        }
 
-        random = new Random();
-
-        current = nodes[index];
+        this.enterDialog = enterDialog;
+        this.responses = responses;
+        this.answers = answers;
     }
 
-    public List<string> Play(string text)
+    public bool IsRightAnswer(string answer)
     {
-        List<string> results = new List<string>();
+        return answers.ContainsKey(answer);
+    }
+    public int GetJumpIndex(string answer)
+    {
+        return answers[answer];
+    }
+    public string GetResponseString(string answer)
+    {
+        int index = 0;
 
-        if (string.Equals(text, current.rightAnswer) || string.IsNullOrEmpty(current.rightAnswer))
+        for (int i = 0; i < answers.Count; i++)
         {
-            results.Add(current.rightAnswerDialog);
-
-            if (current.jump != -1 && current.jumpType == JumpType.OnRightAnswer || current.jumpType == JumpType.Both)
+            if (string.Equals(answers.ElementAt(i).Key, answer, StringComparison.OrdinalIgnoreCase))
             {
-                index = current.jump;
+                index = i;
             }
-            else
-            {
-                index++;
-            }
-
-            if (AtEnd)
-            {
-                return results;
-            }
-
-            current = nodes[index];
-        }
-        else
-        {
-            if (current.jump != -1 && current.jumpType == JumpType.OnWrongAnswer || current.jumpType == JumpType.Both)
-            {
-                index = current.jump;
-
-                if (AtEnd)
-                {
-                    results.Add(wrongAnswerResponses[random.Next(0, wrongAnswerResponses.Length - 1)]);
-                }
-                else
-                {
-                    current = nodes[index];
-                }
-            }
-
-            results.Add(wrongAnswerResponses[random.Next(0, wrongAnswerResponses.Length - 1)]);
         }
 
-        return results;
+        return responses[index];
     }
 }

@@ -4,10 +4,12 @@ using System.Collections.Generic;
 
 using Random = System.Random;
 
+
 public enum JumpType
 {
     OnRightAnswer,
-    OnWrongAnswer
+    OnWrongAnswer,
+    Both
 }
 
 public sealed class TextNode
@@ -31,6 +33,7 @@ public sealed class TextNode
         this.jumpType = jumpType;
     }
 }
+
 
 public sealed class TextAdventure
 {
@@ -68,21 +71,18 @@ public sealed class TextAdventure
 
         random = new Random();
 
-        if (nodes.Length > 0)
-        {
-            current = nodes[index];
-        }
+        current = nodes[index];
     }
 
     public List<string> Play(string text)
     {
         List<string> results = new List<string>();
 
-        if (string.Equals(text, current.rightAnswer))
+        if (string.Equals(text, current.rightAnswer) || string.IsNullOrEmpty(current.rightAnswer))
         {
             results.Add(current.rightAnswerDialog);
 
-            if (current.jump != -1 && current.jumpType == JumpType.OnRightAnswer)
+            if (current.jump != -1 && current.jumpType == JumpType.OnRightAnswer || current.jumpType == JumpType.Both)
             {
                 index = current.jump;
             }
@@ -100,11 +100,18 @@ public sealed class TextAdventure
         }
         else
         {
-            if (current.jump != -1 && current.jumpType == JumpType.OnWrongAnswer)
+            if (current.jump != -1 && current.jumpType == JumpType.OnWrongAnswer || current.jumpType == JumpType.Both)
             {
                 index = current.jump;
 
-                current = nodes[index];
+                if (AtEnd)
+                {
+                    results.Add(wrongAnswerResponses[random.Next(0, wrongAnswerResponses.Length - 1)]);
+                }
+                else
+                {
+                    current = nodes[index];
+                }
             }
 
             results.Add(wrongAnswerResponses[random.Next(0, wrongAnswerResponses.Length - 1)]);

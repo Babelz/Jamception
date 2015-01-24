@@ -25,7 +25,7 @@ public sealed class TextAdventure
     {
         get
         {
-            return index >= nodes.Count;
+            return index > nodes.Count - 1;
         }
     }
     public string FininshedDialog
@@ -81,7 +81,8 @@ public sealed class TextAdventure
             if (index < 0)
             {
                 // No jump. Just get next node.
-                index = ++lastIndex;
+                index = lastIndex;
+                index++;
             }
 
             // If andventure is fininshed, add finished dialog and return response.
@@ -93,6 +94,8 @@ public sealed class TextAdventure
             }
 
             currentNode = nodes[index];
+
+            Debug.Log(currentNode.GetResponseString("tissit"));
         }
         else
         {
@@ -163,24 +166,36 @@ public sealed class TextNode
 
     public bool IsRightAnswer(string answer)
     {
-        return answers.ContainsKey(answer);
-    }
-    public int GetJumpIndex(string answer)
-    {
-        return answers[answer];
-    }
-    public string GetResponseString(string answer)
-    {
-        int index = 0;
+        answer = answer.Trim();
 
         for (int i = 0; i < answers.Count; i++)
         {
             if (string.Equals(answers.ElementAt(i).Key, answer, StringComparison.OrdinalIgnoreCase))
             {
-                index = i;
+                return true;
             }
         }
 
-        return responses[index];
+        return false;
+    }
+    public int GetJumpIndex(string answer)
+    {
+        answer = answer.Trim();
+        
+        return answers[answer];
+    }
+    public string GetResponseString(string answer)
+    {
+        answer = answer.Trim();
+
+        for (int i = 0; i < answers.Count; i++)
+        {
+            if (string.Equals(answers.ElementAt(i).Key, answer, StringComparison.OrdinalIgnoreCase))
+            {
+                return responses[i];
+            }
+        }
+
+        return string.Empty;
     }
 }

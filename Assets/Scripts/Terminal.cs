@@ -27,32 +27,37 @@ public class Terminal : MonoBehaviour
 
     private void Start()
     {
-        // Wrong answer responses.
-        string[] wrongAnswerResponses = new string[]
+        // Dialog played when adventure is fininshed.
+        string finishedDialog = "";
+
+        // Responses sent upon invalid answer.
+        string[] wrongAnswerDialogs = new string[]
         {
             "Väärä vastaus tollo!"
         };
 
         // Adventure nodes.
-        TextNode[] nodes = new TextNode[]
+        List<TextNode> nodes = new List<TextNode>()
         {
-            new TextNode(dialog: "A group of four engineer students, Pidgin, Siquel, Bab and Eeneku have arrived at the game jam site in Kajaani.\nA mighty task lies ahead of them, for they must be able to complete a video game in mere 48 hours!\nAfter a while of planning, the group gets to work on their game. Hours pass, and the team is making good progress.\nSoon however, the team runs into a strange code error.\nThe error is not critical, but it could hamper their progress later.\nWhat should the team do?\n\n- solve\n- ignore", rightAnswer: "solve", rightAnswerDialog: "The team decides that the error is too dangerous to ignore, and start working on it...", jump: -1, jumpType: JumpType.OnRightAnswer),
+            /*new TextNode(dialog: "A group of four engineer students, Pidgin, Siquel, Bab and Eeneku have arrived at the game jam site in Kajaani.\nA mighty task lies ahead of them, for they must be able to complete a video game in mere 48 hours!\nAfter a while of planning, the group gets to work on their game. Hours pass, and the team is making good progress.\nSoon however, the team runs into a strange code error.\nThe error is not critical, but it could hamper their progress later.\nWhat should the team do?\n\n- solve\n- ignore", rightAnswer: "solve", rightAnswerDialog: "The team decides that the error is too dangerous to ignore, and start working on it...", jump: -1, jumpType: JumpType.OnRightAnswer),
             new TextNode(dialog: "asd", rightAnswer: "2", rightAnswerDialog: "ebin", jump: -1, jumpType: JumpType.OnRightAnswer),
             new TextNode(dialog: "", rightAnswer: "", rightAnswerDialog: "", jump: -1, jumpType: JumpType.OnRightAnswer),
             new TextNode(dialog: "", rightAnswer: "", rightAnswerDialog: "", jump: -1, jumpType: JumpType.OnRightAnswer),
             new TextNode(dialog: "", rightAnswer: "", rightAnswerDialog: "", jump: -1, jumpType: JumpType.OnRightAnswer),
             new TextNode(dialog: "", rightAnswer: "", rightAnswerDialog: "", jump: -1, jumpType: JumpType.OnRightAnswer),
             new TextNode(dialog: "", rightAnswer: "", rightAnswerDialog: "", jump: -1, jumpType: JumpType.OnRightAnswer),
-            new TextNode(dialog: "", rightAnswer: "", rightAnswerDialog: "", jump: -1, jumpType: JumpType.OnRightAnswer)
+            new TextNode(dialog: "", rightAnswer: "", rightAnswerDialog: "", jump: -1, jumpType: JumpType.OnRightAnswer)*/
         };
 
-        adventure = new TextAdventure(nodes, wrongAnswerResponses);
+        adventure = new TextAdventure(nodes, wrongAnswerDialogs, finishedDialog);
      
         // Terminal lines.
+        adventure = new TextAdventure(nodes, wrongAnswerDialogs, finishedDialog);
+
         lines = new List<string>()
         {
             "AT THE GLOBAL GAME JAM 2015, FINLAND, KAJAANI...", 
-            adventure.CurrentDialog
+            adventure.CurrentNode.EnterDialog
         };
 
         // Input style.
@@ -147,7 +152,7 @@ public class Terminal : MonoBehaviour
 
             newLines.AddRange(adventure.Play(currentLine));
 
-            newLines.Add(adventure.CurrentDialog);
+            newLines.Add(adventure.CurrentNode.EnterDialog);
 
             // New line.
             lines.Add(">" + currentLine);

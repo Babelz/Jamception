@@ -2,6 +2,7 @@
 using System.Collections;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public enum QuestState
 {
@@ -38,6 +39,8 @@ public abstract class QuestTracker
     public QuestTracker(string desc)
     {
         this.desc = desc;
+
+        state = QuestState.InProgress;
     }
 
     protected abstract void UpdateState(ref QuestState state);
@@ -81,23 +84,26 @@ public class ManualQuestTracker : QuestTracker
 public class ConditionalQuestTracker : QuestTracker
 {
     #region Vars
-    private readonly Func<bool> condition;  
+    private readonly UpdateQuestStateDelegate updateStateDelegate;
     #endregion
 
-    public ConditionalQuestTracker(string desc, Func<bool> condition)
+    public ConditionalQuestTracker(string desc, UpdateQuestStateDelegate updateStateDelegate)
         : base(desc)
     {
-        if (condition == null)
+        if (updateStateDelegate == null)
         {
             throw new ArgumentNullException("condition");
         }
 
-        this.condition = condition;
+        this.updateStateDelegate = updateStateDelegate;
     }
 
     protected override void UpdateState(ref QuestState state)
     {
+        updateStateDelegate(ref state);
     }
+
+    public delegate void UpdateQuestStateDelegate(ref QuestState state);
 }
 
 public class QuestLine : QuestTracker
@@ -117,6 +123,16 @@ public class QuestLine : QuestTracker
         }
 
         this.quests = quests;
+
+        currentQuest = quests[0];
+    }
+
+    public void Update()
+    {
+        foreach (QuestTracker quest in quests.Where(q => q.State == QuestState.InProgress))
+        {
+            quest.UpdateState();
+        }
     }
 
     protected override void UpdateState(ref QuestState state)
@@ -130,15 +146,58 @@ public class QuestLine : QuestTracker
             currentQuest = quests[questIndex];
         }
 
+        // If one quest has failed, line has failed.
+        if (Array.Find(quests, q => q.State == QuestState.Failed) != null)
+        {
+            state = QuestState.Failed;
+        }
+
+        // If all quests are completed, the line is complete.
         state = Array.TrueForAll(quests, q => q.State == QuestState.Completed) ? QuestState.Completed : QuestState.InProgress;
+    }
+
+    public IEnumerable<QuestTracker> Quests()
+    {
+        return quests;
     }
 }
 
 
-public class QuestLog
+public class QuestLog : IEnumerable<QuestTracker>
 {
     #region Vars
     private readonly List<QuestTracker> quests;
+    #endregion
+
+    #region Properties
+    public int QuestsCount
+    {
+        get
+        {
+            return quests.Count;
+        }
+    }
+    public int CompletedQuests
+    {
+        get
+        {
+            return quests.Count(q => q.State == QuestState.Completed);
+        }
+    }
+    public int FailedQuests
+    {
+        get
+        {
+            return quests.Count(q => q.State == QuestState.Failed);
+        }
+    }
+    public int QuestsInProgress
+    {
+        get
+        {
+            return quests.Count(q => q.State == QuestState.InProgress);
+        }
+    }
     #endregion
 
     public QuestLog(List<QuestTracker> quests)
@@ -148,15 +207,34 @@ public class QuestLog
     public QuestLog()
         : this(new List<QuestTracker>())
     {
+    }
 
+    public void Update()
+    {
+        for (int i = 0; i < quests.Count; i++)
+        {
+            quests[i].UpdateState();
+        }
     }
 
     public void AddQuest(QuestTracker quest)
     {
-        quests.Add(quest);
+        if (quests.Contains(quest))
+        {
+            quests.Add(quest);
+        }
     }
-    public void RemoveQuest(QuestTracker quest)
+    public bool RemoveQuest(QuestTracker quest)
     {
-        quests.Remove(quest);
+        return quests.Remove(quest);
+    }
+
+    public IEnumerator<QuestTracker> GetEnumerator()
+    {
+        return quests.GetEnumerator();
+    }
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
     }
 }

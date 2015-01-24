@@ -1,15 +1,19 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class PlayerController : MonoBehaviour {
+public class PlayerController : MonoBehaviour
+{
+    #region Vars
+    private GameObject playerCamera;
+    #endregion
 
-	// Use this for initialization
-	void Start () {
-	
-	}
+    // Use this for initialization
+    private void Start()
+    {
+    }
 	
 	// Update is called once per frame
-	void Update () {
-	
+	private void Update()
+    {
 	}
 }

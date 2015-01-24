@@ -62,7 +62,6 @@ public class ManualQuestTracker : QuestTracker
     {
     }
 
-
     protected override void UpdateState(ref QuestState state)
     {
         state = mark;
@@ -128,6 +127,14 @@ public class QuestLine : QuestTracker
         currentQuest = quests[0];
     }
 
+    public void Update()
+    {
+        foreach (QuestTracker quest in quests.Where(q => q.State == QuestState.InProgress))
+        {
+            quest.UpdateState();
+        }
+    }
+
     protected override void UpdateState(ref QuestState state)
     {
         currentQuest.UpdateState();
@@ -147,6 +154,11 @@ public class QuestLine : QuestTracker
 
         // If all quests are completed, the line is complete.
         state = Array.TrueForAll(quests, q => q.State == QuestState.Completed) ? QuestState.Completed : QuestState.InProgress;
+    }
+
+    public IEnumerable<QuestTracker> Quests()
+    {
+        return quests;
     }
 }
 

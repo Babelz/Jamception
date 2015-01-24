@@ -59,4 +59,27 @@ public class PlayerBehaviour : MonoBehaviour {
         transform.position += new Vector3(0f, 1f, 0f) * Vertical * Speed * Time.deltaTime;
 
     }
+
+    void OnTriggerStay2D(Collider2D col)
+    {
+        if (col.name == "LaptopTrigger")
+        {
+            if (!Input.GetKeyDown(KeyCode.E)) return;
+            SmashLaptop(col.gameObject);
+        }
+    }
+
+    void SmashLaptop(GameObject laptopTrigger)
+    {
+        // head level obj
+        var obj = laptopTrigger.transform.parent;
+        var rage = obj.GetComponent<LaptopRage>();
+        rage.OnFlippingFinished += rage_OnFlippingFinished;
+        rage.InitiateRage();
+    }
+
+    void rage_OnFlippingFinished(LaptopRage sender)
+    {
+        sender.OnFlippingFinished -= rage_OnFlippingFinished;
+    }
 }

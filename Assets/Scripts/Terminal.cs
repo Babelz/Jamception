@@ -25,19 +25,24 @@ public class Terminal : MonoBehaviour
 
     private void Start()
     {
+        // Wrong answer responses.
         string[] wrongAnswerResponses = new string[]
         {
+
         };
 
+        // Adventure nodes.
         TextNode[] nodes = new TextNode[]
         {
+            new TextNode(dialog: "", rightAnswer: "", rightAnswerDialog: "", jump: -1, jumpType: JumpType.OnRightAnswer)
         };
 
         adventure = new TextAdventure(nodes, wrongAnswerResponses);
 
+        // Terminal lines.
         lines = new List<string>()
         {
-            "TXT XTREME ADVENTURE 0.1"
+            "TXT XTREME ADVENTURE 0.1" 
         };
 
         textStyle = new GUIStyle();

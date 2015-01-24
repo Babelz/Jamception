@@ -20,7 +20,7 @@ public class PlayerBehaviour : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         Physics2D.gravity = new Vector3(0f, 0f, 0f);
-        Physics2D.IgnoreCollision(transform.collider2D, transform.GetChild(0).collider2D);
+        Physics2D.IgnoreCollision(transform.GetComponent<BoxCollider2D>(), transform.GetComponent<CircleCollider2D>());
 	}
 	
 	// Update is called once per frame

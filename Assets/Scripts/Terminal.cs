@@ -25,15 +25,19 @@ public class Terminal : MonoBehaviour
 
     private void Start()
     {
+        // Dialog played when adventure is fininshed.
+        string finishedDialog = "";
+
+        // Responses sent upon invalid answer.
         string[] wrongAnswerResponses = new string[]
         {
         };
 
-        TextNode[] nodes = new TextNode[]
+        List<TextNode> nodes = new List<TextNode>()
         {
         };
 
-        adventure = new TextAdventure(nodes, wrongAnswerResponses);
+        adventure = new TextAdventure(nodes, wrongAnswerResponses, finishedDialog);
 
         lines = new List<string>()
         {

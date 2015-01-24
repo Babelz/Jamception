@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 using Stopwatch = System.Diagnostics.Stopwatch;
 
@@ -8,7 +9,8 @@ public class Terminal : MonoBehaviour
 {
     #region Vars
     private TextAdventure adventure;
-    private GUIStyle textStyle;
+    private GUIStyle inputTextStyle; 
+    private GUIStyle outputTextStyle;
 
     private List<string> lines;
 
@@ -28,30 +30,44 @@ public class Terminal : MonoBehaviour
         // Wrong answer responses.
         string[] wrongAnswerResponses = new string[]
         {
-
+            "Väärä vastaus tollo!"
         };
 
         // Adventure nodes.
         TextNode[] nodes = new TextNode[]
         {
+            new TextNode(dialog: "A group of four engineer students, Pidgin, Siquel, Bab and Eeneku have arrived at the game jam site in Kajaani.\nA mighty task lies ahead of them, for they must be able to complete a video game in mere 48 hours!\nAfter a while of planning, the group gets to work on their game. Hours pass, and the team is making good progress.\nSoon however, the team runs into a strange code error.\nThe error is not critical, but it could hamper their progress later.\nWhat should the team do?\n\n- solve\n- ignore", rightAnswer: "solve", rightAnswerDialog: "The team decides that the error is too dangerous to ignore, and start working on it...", jump: -1, jumpType: JumpType.OnRightAnswer),
+            new TextNode(dialog: "asd", rightAnswer: "2", rightAnswerDialog: "ebin", jump: -1, jumpType: JumpType.OnRightAnswer),
+            new TextNode(dialog: "", rightAnswer: "", rightAnswerDialog: "", jump: -1, jumpType: JumpType.OnRightAnswer),
+            new TextNode(dialog: "", rightAnswer: "", rightAnswerDialog: "", jump: -1, jumpType: JumpType.OnRightAnswer),
+            new TextNode(dialog: "", rightAnswer: "", rightAnswerDialog: "", jump: -1, jumpType: JumpType.OnRightAnswer),
+            new TextNode(dialog: "", rightAnswer: "", rightAnswerDialog: "", jump: -1, jumpType: JumpType.OnRightAnswer),
+            new TextNode(dialog: "", rightAnswer: "", rightAnswerDialog: "", jump: -1, jumpType: JumpType.OnRightAnswer),
             new TextNode(dialog: "", rightAnswer: "", rightAnswerDialog: "", jump: -1, jumpType: JumpType.OnRightAnswer)
         };
 
         adventure = new TextAdventure(nodes, wrongAnswerResponses);
-
+     
         // Terminal lines.
         lines = new List<string>()
         {
-            "TXT XTREME ADVENTURE 0.1" 
+            "AT THE GLOBAL GAME JAM 2015, FINLAND, KAJAANI...", 
+            adventure.CurrentDialog
         };
 
-        textStyle = new GUIStyle();
-        textStyle.normal.textColor = Color.green;
-        textStyle.fontSize = 18;
+        // Input style.
+        inputTextStyle = new GUIStyle();
+        inputTextStyle.normal.textColor = Color.green;
+        inputTextStyle.fontSize = 18;
+
+        // Output style.
+        outputTextStyle = new GUIStyle();
+        outputTextStyle.normal.textColor = Color.white;
+        outputTextStyle.fontSize = 18;
 
         inputTimer = Stopwatch.StartNew();
 
-        maxLines = (int)(Screen.height / textStyle.CalcSize(new GUIContent(" ")).y) - 1;
+        maxLines = (int)(Screen.height / inputTextStyle.CalcSize(new GUIContent(" ")).y) - 2;
 
         currentLine = string.Empty;
     }
@@ -60,8 +76,29 @@ public class Terminal : MonoBehaviour
     {
         int index = 0;
 
+        List<string> parsedLines = new List<string>();
+
         foreach (string str in lines)
         {
+            if (str.Contains("\n"))
+            {
+                string[] newLines = str.Split(new string[] { "\n" }, System.StringSplitOptions.RemoveEmptyEntries);
+
+                if(newLines.Length > 0) 
+                {
+                    parsedLines.AddRange(newLines);
+                }
+
+                continue;
+            }
+
+            parsedLines.Add(str);
+        }
+
+        foreach (string str in parsedLines)
+        {
+            GUIStyle textStyle = str.StartsWith(">") ? outputTextStyle : inputTextStyle;
+
             GUIContent line = new GUIContent(str);
 
             Vector2 textSize = textStyle.CalcSize(line);
@@ -79,7 +116,7 @@ public class Terminal : MonoBehaviour
 
         string input = Input.inputString;
 
-        float height = textStyle.CalcSize(new GUIContent(" ")).y;
+        float height = inputTextStyle.CalcSize(new GUIContent(" ")).y;
 
         Rect textAreaRect = new Rect(
             left: transform.position.x,
@@ -93,7 +130,7 @@ public class Terminal : MonoBehaviour
 
             currentLine += input;
 
-            GUI.Label(textAreaRect, currentLine, textStyle);
+            GUI.Label(textAreaRect, currentLine, inputTextStyle);
         }
 
         if (!string.IsNullOrEmpty(currentLine))
@@ -106,7 +143,25 @@ public class Terminal : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Return))
         {
-            NewLine();
+            List<string> newLines = new List<string>();
+
+            newLines.AddRange(adventure.Play(currentLine));
+
+            newLines.Add(adventure.CurrentDialog);
+
+            // New line.
+            lines.Add(">" + currentLine);
+            currentLine = string.Empty;
+
+            foreach (string newLine in newLines)
+            {
+                lines.Add(newLine);
+            }
+
+            while (lines.Count > maxLines)
+            {
+                lines.RemoveAt(0);
+            }
         }
         else if (Input.GetKeyDown(KeyCode.Backspace))
         {
@@ -117,17 +172,6 @@ public class Terminal : MonoBehaviour
         }
     }
 
-    private void NewLine()
-    {
-        lines.Add(currentLine);
-
-        if (lines.Count > maxLines)
-        {
-            lines.RemoveAt(0);
-        }
-
-        currentLine = string.Empty;
-    }
     private void ChangeBackgroundColor(Color color)
     {
         camera.backgroundColor = color;

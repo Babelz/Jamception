@@ -62,6 +62,13 @@ public sealed class TextAdventure
             return current.dialog;
         }
     }
+    public TextNode CurrentNode
+    {
+        get
+        {
+            return current;
+        }
+    }
     #endregion
 
     public TextAdventure(TextNode[] nodes, string[] wrongAnswerResponses)

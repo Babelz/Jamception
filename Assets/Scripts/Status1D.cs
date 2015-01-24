@@ -5,11 +5,12 @@ public class Status1D : MonoBehaviour {
 
     private float scoreMax = 100f;
     private float score = 0f;
-    private float maxScale = 5f;
+    private float maxScale = 1f;
+    private StateManager stateManager;
 
 	// Use this for initialization
 	void Start () {
-        renderer.material.color = Color.red;
+        stateManager = GameObject.FindGameObjectWithTag("StateManager").GetComponent<StateManager>();
 	}
 	
 	// Update is called once per frame
@@ -19,8 +20,14 @@ public class Status1D : MonoBehaviour {
 
     public void addScore(float amount)
     {
-        score += amount;
+        if (!stateManager.IsEntering())
+        { 
+            score += amount;
 
-        if (score > scoreMax) score = scoreMax;
+            if (score > scoreMax)
+            {
+                GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera1D>().EnterTheMatrix();
+            }
+        }
     }
 }

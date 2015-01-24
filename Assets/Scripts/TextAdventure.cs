@@ -21,11 +21,18 @@ public sealed class TextAdventure
     #endregion
 
     #region Properties
-    public bool Fininshed
+    public bool Finished
     {
         get
         {
-            return index < nodes.Count;
+            return index >= nodes.Count;
+        }
+    }
+    public string FininshedDialog
+    {
+        get
+        {
+            return finishedDialog;
         }
     }
     public TextNode CurrentNode
@@ -44,6 +51,8 @@ public sealed class TextAdventure
         this.finishedDialog = finishedDialog;
 
         currentNode = nodes[index];
+
+        random = new Random();
     }
 
     public void Reset()
@@ -55,7 +64,7 @@ public sealed class TextAdventure
     {
         List<string> response = new List<string>();
 
-        if (Fininshed)
+        if (Finished)
         {
             throw new InvalidOperationException("Adventure has been fininshed. Reset it to continue.");
         }
@@ -72,12 +81,12 @@ public sealed class TextAdventure
             if (index < 0)
             {
                 // No jump. Just get next node.
-                index = lastIndex++;
+                index = ++lastIndex;
             }
 
             // If andventure is fininshed, add finished dialog and return response.
-            if (Fininshed)
-            {
+            if (Finished)
+            {   
                 response.Add(finishedDialog);
 
                 return response;
@@ -105,7 +114,7 @@ public static class AdventureBuilder
     /// </summary>
     /// <param name="answer">Answer.</param>
     /// <param name="jumpIndex">Jump index. -1 index means there will be no jump and next node will be selected upon right answer.</param>
-    public static Dictionary<string, int> AddAnswer(this Dictionary<string, int> dict, string answer, int jumpIndex) 
+    public static Dictionary<string, int> AddAnswer(this Dictionary<string, int> dict, string answer, int jumpIndex = -1) 
     {
         dict.Add(answer, jumpIndex);
 
@@ -166,7 +175,7 @@ public sealed class TextNode
 
         for (int i = 0; i < answers.Count; i++)
         {
-            if (answers.ElementAt(i).Key == answer)
+            if (string.Equals(answers.ElementAt(i).Key, answer, StringComparison.OrdinalIgnoreCase))
             {
                 index = i;
             }

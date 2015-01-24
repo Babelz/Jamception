@@ -50,34 +50,13 @@ public abstract class QuestTracker
 
 public class ManualQuestTracker : QuestTracker
 {
-    public ManualQuestTracker(string desc)
-        : base(desc)
-    {
-    }
-
-    protected override void UpdateState(ref bool completed)
-    {
-        completed = true;
-    }
-}
-
-public class ConditionalQuestTracker : QuestTracker
-{
     #region Vars
-    private readonly Func<bool> condition;
-
     private QuestState mark;
     #endregion
 
-    public ConditionalQuestTracker(string desc, Func<bool> condition)
+    public ManualQuestTracker(string desc)
         : base(desc)
     {
-        if (condition == null)
-        {
-            throw new ArgumentNullException("condition");
-        }
-
-        this.condition = condition;
     }
 
     protected override void UpdateState(ref QuestState state)
@@ -96,6 +75,28 @@ public class ConditionalQuestTracker : QuestTracker
     public void MarkInProgress()
     {
         mark = QuestState.InProgress;
+    }
+}
+
+public class ConditionalQuestTracker : QuestTracker
+{
+    #region Vars
+    private readonly Func<bool> condition;  
+    #endregion
+
+    public ConditionalQuestTracker(string desc, Func<bool> condition)
+        : base(desc)
+    {
+        if (condition == null)
+        {
+            throw new ArgumentNullException("condition");
+        }
+
+        this.condition = condition;
+    }
+
+    protected override void UpdateState(ref QuestState state)
+    {
     }
 }
 
@@ -129,22 +130,33 @@ public class QuestLine : QuestTracker
             currentQuest = quests[questIndex];
         }
 
-        state = Array.TrueForAll(quests, q => q.State == QuestState.Completed) ? 
+        state = Array.TrueForAll(quests, q => q.State == QuestState.Completed) ? QuestState.Completed : QuestState.InProgress;
     }
 }
 
 
-public class GuestLog
+public class QuestLog
 {
     #region Vars
     private readonly List<QuestTracker> quests;
     #endregion
 
-    public void AddQuest(QuestTracker quest)
+    public QuestLog(List<QuestTracker> quests)
+    {
+        this.quests = quests;
+    }
+    public QuestLog()
+        : this(new List<QuestTracker>())
     {
 
     }
+
+    public void AddQuest(QuestTracker quest)
+    {
+        quests.Add(quest);
+    }
     public void RemoveQuest(QuestTracker quest)
     {
+        quests.Remove(quest);
     }
 }

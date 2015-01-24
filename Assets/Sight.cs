@@ -17,7 +17,12 @@ public class Sight : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        Vector3 d = transform.position + transform.up * col.radius ;
+        Vector3 a = Quaternion.AngleAxis(-FOV/2f, Vector3.up) * d;
+        Vector3 b = -a;
         
+        Debug.DrawLine(transform.position, a);
+        Debug.DrawLine(transform.position, b);
 	}
 
     void OnTriggerStay2D(Collider2D other)

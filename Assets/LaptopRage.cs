@@ -47,7 +47,6 @@ public class LaptopRage : MonoBehaviour {
 
     public void InitiateRage()
     {
-        //Debug.Log(CanBeFlipped);
         if (!CanBeFlipped) return;
         flipTheLaptopInitiated = true;
     }

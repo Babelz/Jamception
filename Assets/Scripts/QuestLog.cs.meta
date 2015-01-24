@@ -1,5 +1,13 @@
 fileFormatVersion: 2
+<<<<<<< HEAD
 guid: bfe116917eddd81448cc72e27767f4a7
+=======
+<<<<<<< HEAD:Assets/Scripts/QuestLog.cs.meta
+guid: 7467a8b04a73f1c498faec2e1550821a
+=======
+guid: 1838cbe8bd4d8564c93462a1b79891f4
+>>>>>>> 2acd643e82a0852f01a2a93d3f513db22303e1e1:Assets/Scripts/QuestLog.cs.meta
+>>>>>>> 2e67b0497ead9d2cdaa5f24e8107ec223967c4a5
 MonoImporter:
   serializedVersion: 2
   defaultReferences: []

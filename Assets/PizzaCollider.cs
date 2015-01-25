@@ -19,8 +19,8 @@ public class PizzaCollider : MonoBehaviour {
 
         var table = other.GetComponent<TableBehaviour>();
         if (!table.HasPizza) return;
-        
-        table.GimmePizza();
+
+        table.PizzaBehaviour.GimmePizza();
         //transform.parent.GetComponent<PlayerBehaviour>()
     }
 }

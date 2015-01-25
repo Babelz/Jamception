@@ -26,7 +26,7 @@ public class Camera1D : MonoBehaviour {
             float fracJourney = distCovered / journeyLength;
             transform.position = Vector3.Lerp(start.position, (end.position + targetOffset), fracJourney);
 
-            if (transform.position == end.position)
+            if (((end.position + targetOffset) - transform.position).sqrMagnitude < 0.05)
             {
                 Application.LoadLevel(3);
             }

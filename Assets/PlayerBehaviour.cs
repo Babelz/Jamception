@@ -1,7 +1,37 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+
+public sealed class SecondMapQuestSet : IQuestSet
+{
+    public string Name
+    {
+        get
+        {
+            return "SecondMapQuestSet"; 
+        }
+    }
+
+    public List<QuestTracker> GetQuests()
+    {
+        List<QuestTracker> q = new List<QuestTracker>();
+
+        ConditionalQuestTracker c = new ConditionalQuestTracker("Steal 15 pizzas",
+            new ConditionalQuestTracker.UpdateQuestStateDelegate(CheckPizzas));
+
+        return q;
+    }
+
+    private void CheckPizzas(ref QuestState state)
+    {
+
+    }
+}
+
 
 public class PlayerBehaviour : MonoBehaviour {
+
+    private QuestLog log;
 
     public float Speed = 5f;
 
@@ -19,6 +49,8 @@ public class PlayerBehaviour : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+        log = new QuestLog();
+
         Physics2D.gravity = new Vector3(0f, 0f, 0f);
         Physics2D.IgnoreCollision(transform.GetComponent<BoxCollider2D>(), transform.GetComponent<CircleCollider2D>());
 	}

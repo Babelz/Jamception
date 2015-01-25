@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Diagnostics;
 public delegate void LaptopRageEventHandler(LaptopRage sender);
 public class LaptopRage : MonoBehaviour {
 
@@ -7,11 +8,13 @@ public class LaptopRage : MonoBehaviour {
 
     public event LaptopRageEventHandler OnFlippingFinished;
 
+    private Stopwatch stopWatch = new Stopwatch();
+    private int limit = 500;
     public bool CanBeFlipped
     {
         get
         {
-            return !flipTheLaptopInitiated && !CantBeRotated;
+            return !flipTheLaptopInitiated && stopWatch.ElapsedMilliseconds < limit;
         }
     }
 
@@ -36,8 +39,9 @@ public class LaptopRage : MonoBehaviour {
         transform.Rotate(Vector3.right * 5f);
         
         
-        if (CantBeRotated)
+        if (stopWatch.ElapsedMilliseconds > limit)
         {
+            
             flipTheLaptopInitiated = false;
             if (OnFlippingFinished != null)
                 OnFlippingFinished(this);
@@ -49,5 +53,6 @@ public class LaptopRage : MonoBehaviour {
     {
         if (!CanBeFlipped) return;
         flipTheLaptopInitiated = true;
+        stopWatch.Start();
     }
 }

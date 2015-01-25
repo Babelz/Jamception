@@ -24,15 +24,26 @@ public sealed class SecondMapQuestSet : IQuestSet
         player = GameObject.Find("Player");
         ConditionalQuestTracker c = new ConditionalQuestTracker("Steal 15 pizzas",
             new ConditionalQuestTracker.UpdateQuestStateDelegate(CheckPizzas));
-
+        ConditionalQuestTracker perse = new ConditionalQuestTracker("Flip 15 laptops", new ConditionalQuestTracker.UpdateQuestStateDelegate(CheckLaptops));
+        
         q.Add(c);
+        q.Add(perse);
 
         return q;
     }
 
+    private void CheckLaptops(ref QuestState state)
+    {
+        Debug.Log(player.GetComponent<PlayerBehaviour>().FlippedLaptops);
+        if (player.GetComponent<PlayerBehaviour>().FlippedLaptops >= 15)
+        {
+            state = QuestState.Completed;
+        }
+    }
+
     private void CheckPizzas(ref QuestState state)
     {
-        Debug.Log(player.GetComponent<PlayerBehaviour>().PizzaCount);
+        //Debug.Log(player.GetComponent<PlayerBehaviour>().PizzaCount);
         if (player.GetComponent<PlayerBehaviour>().PizzaCount >= 15)
         {
             state = QuestState.Completed;
@@ -55,6 +66,12 @@ public class PlayerBehaviour : MonoBehaviour {
         set;
     }
 
+    public int FlippedLaptops
+    {
+        get;
+        set;
+    }
+
     public float Horizontal
     {
         get;
@@ -72,9 +89,11 @@ public class PlayerBehaviour : MonoBehaviour {
         Physics2D.gravity = new Vector3(0f, 0f, 0f);
         Physics2D.IgnoreCollision(transform.GetComponent<BoxCollider2D>(), transform.GetComponent<CircleCollider2D>());
 	}
-	
+
+    bool entered = false;
 	// Update is called once per frame
-	void Update () {     
+	void Update () {
+
 	}
 
     void FixedUpdate()
@@ -131,5 +150,6 @@ public class PlayerBehaviour : MonoBehaviour {
     void rage_OnFlippingFinished(LaptopRage sender)
     {
         sender.OnFlippingFinished -= rage_OnFlippingFinished;
+        FlippedLaptops++;
     }
 }

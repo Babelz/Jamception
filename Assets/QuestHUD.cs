@@ -47,7 +47,7 @@ public sealed class QuestHUD : MonoBehaviour
     #region Vars
     private GUIStyle textStyle;
     private Camera playerCamera;
-    private QuestLog questLog;
+    public QuestLog questLog;
 
     public string questSetName;
     #endregion

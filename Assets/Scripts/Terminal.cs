@@ -28,7 +28,7 @@ public class Terminal : MonoBehaviour
     private void Start()
     {
         // Dialog played when adventure is finished.
-        string finishedDialog = "The game is now completed. All the trials of friendship and endurance are now over,\nand the team faces the age-old question.";
+        string finishedDialog = "The game is now completed. All the trials of friendship and endurance are now over,\nand the team faces the age-old question.\nWHAT DO WE DO NOW? (hint: press Enter)";
 
         // Responses sent upon invalid answer.
         string[] wrongAnswerDialogs = new string[]
@@ -95,12 +95,12 @@ public class Terminal : MonoBehaviour
         // Input style.
         inputTextStyle = new GUIStyle();
         inputTextStyle.normal.textColor = Color.green;
-        inputTextStyle.fontSize = 18;
+        inputTextStyle.fontSize = 20;
 
         // Output style.
         outputTextStyle = new GUIStyle();
         outputTextStyle.normal.textColor = Color.white;
-        outputTextStyle.fontSize = 18;
+        outputTextStyle.fontSize = 20;
 
         inputTimer = Stopwatch.StartNew();
 
@@ -196,12 +196,12 @@ public class Terminal : MonoBehaviour
             List<string> newLines = new List<string>();
 
             if (adventure.Finished)
-            {   
+            {
                 NewLine();
 
                 RemoveLines();
 
-                return;
+                Application.Quit();
             }
 
             // Get response.

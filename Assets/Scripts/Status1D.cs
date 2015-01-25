@@ -20,13 +20,13 @@ public class Status1D : MonoBehaviour {
 
     public void addScore(float amount)
     {
-        if (!stateManager.IsEntering())
+        if (stateManager.State == (int)GameStates.Normal)
         { 
             score += amount;
 
             if (score > scoreMax)
             {
-                GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera1D>().EnterTheMatrix();
+                GameObject.FindGameObjectWithTag("GameIsReady").GetComponent<GameIsReady1D>().WhatDoWeDoNow();
             }
         }
     }

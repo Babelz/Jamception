@@ -17,7 +17,7 @@ public class GuiTimer1D : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (!stateManager.IsEntering())
+        if (stateManager.State == (int)GameStates.Normal)
         {
             minutes -= Time.deltaTime * 30;
             if (minutes < 0f)

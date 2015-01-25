@@ -9,7 +9,7 @@ public class Computer1D : MonoBehaviour {
     private float timer;
     private float scoreTimer;
     private int state;
-    private enum States { Normal, Bugged, BSOD };
+    private enum ComputerStates { Normal, Bugged, BSOD };
 
     private KeyCode fixKey;
     private KeyCode[] possibleKeys = { KeyCode.Z, KeyCode.X, KeyCode.C, KeyCode.V };
@@ -19,18 +19,18 @@ public class Computer1D : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         stateManager = GameObject.FindGameObjectWithTag("StateManager").GetComponent<StateManager>();
-        state = (int)States.Normal;
+        state = (int)ComputerStates.Normal;
         timer = Random.Range(minTime, maxTime);
         scoreTimer = 1;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        if (!stateManager.IsEntering())
+        if (stateManager.State == (int)GameStates.Normal)
         {
             timer -= Time.deltaTime;
 
-            if (state == (int)States.Normal)
+            if (state == (int)ComputerStates.Normal)
             {
                 scoreTimer -= Time.deltaTime;
 
@@ -43,22 +43,22 @@ public class Computer1D : MonoBehaviour {
                 else if (timer < 0)
                 {
                     gameObject.renderer.material.color = Color.green;
-                    state = (int)States.Bugged;
+                    state = (int)ComputerStates.Bugged;
                     timer = 5;
                     fixKey = possibleKeys[Random.Range(0, possibleKeys.Length)];
                 }
             }
 
-            if (timer < 0 && state == (int)States.Bugged)
+            if (timer < 0 && state == (int)ComputerStates.Bugged)
             {
                 gameObject.renderer.material.color = Color.blue;
-                state = (int)States.BSOD;
+                state = (int)ComputerStates.BSOD;
                 timer = 10;
             }
-            else if (timer < 0 && state == (int)States.BSOD)
+            else if (timer < 0 && state == (int)ComputerStates.BSOD)
             {
                 gameObject.renderer.material.color = Color.white;
-                state = (int)States.Normal;
+                state = (int)ComputerStates.Normal;
                 timer = Random.Range(minTime, maxTime);
                 scoreTimer = 1;
             }
@@ -67,13 +67,13 @@ public class Computer1D : MonoBehaviour {
 
     public bool IsBugged()
     {
-        return (state == (int)States.Bugged);
+        return (state == (int)ComputerStates.Bugged);
     }
 
     public void Fix()
     {
         gameObject.renderer.material.color = Color.white;
-        state = (int)States.Normal;
+        state = (int)ComputerStates.Normal;
         timer = Random.Range(minTime, maxTime);
         scoreTimer = 1;
     }
@@ -86,7 +86,7 @@ public class Computer1D : MonoBehaviour {
     public void AWildBSODAppears()
     {
         gameObject.renderer.material.color = Color.blue;
-        state = (int)States.BSOD;
+        state = (int)ComputerStates.BSOD;
         timer = 10;
     }
 }

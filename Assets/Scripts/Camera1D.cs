@@ -6,7 +6,7 @@ public class Camera1D : MonoBehaviour {
     private GameObject[] computers;
     private Transform start;
     private Transform end;
-    private float speed = 0.5f;
+    private float speed = 0.2f;
     private float startTime;
     private float journeyLength;
     private StateManager stateManager;
@@ -20,7 +20,7 @@ public class Camera1D : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	    if (stateManager.IsEntering())
+        if (stateManager.State == (int)GameStates.EnteringTheMatrix)
         {
             float distCovered = (Time.time - startTime) * speed;
             float fracJourney = distCovered / journeyLength;
@@ -41,7 +41,7 @@ public class Camera1D : MonoBehaviour {
             computer.transform.renderer.material.color = Color.black;
         }
 
-        stateManager.EnterTheMatrix();
+        stateManager.State = (int)GameStates.EnteringTheMatrix;
         int random = Random.Range(0, computers.Length);
 
         start = transform;

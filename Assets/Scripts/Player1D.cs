@@ -24,7 +24,7 @@ public class Player1D : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-        if (!stateManager.IsEntering())
+        if (stateManager.State == (int)GameStates.Normal)
         {
             float direction = Input.GetAxis("Horizontal");
             transform.Translate(Vector2.right * direction * speed * Time.deltaTime);

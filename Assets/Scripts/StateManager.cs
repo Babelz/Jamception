@@ -1,28 +1,25 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+public enum GameStates { Normal, EnteringTheMatrix, GameIsReady };
+
 public class StateManager : MonoBehaviour {
 
-    private enum States { Normal, EnteringTheMatrix };
     private int state;
+
+    public int State
+    {
+        get { return state; }
+        set { state = value; }
+    }
 
 	// Use this for initialization
 	void Start () {
-	    state = (int)States.Normal;
+        state = (int)GameStates.Normal;
 	}
 	
 	// Update is called once per frame
 	void Update () {
 	
 	}
-
-    public bool IsEntering()
-    {
-        return (state == (int)States.EnteringTheMatrix);
-    }
-
-    public void EnterTheMatrix()
-    {
-        state = (int)States.EnteringTheMatrix;
-    }
 }

@@ -219,7 +219,7 @@ public class QuestLog : IEnumerable<QuestTracker>
 
     public void AddQuest(QuestTracker quest)
     {
-        if (quests.Contains(quest))
+        if (!quests.Contains(quest))
         {
             quests.Add(quest);
         }

@@ -4,6 +4,12 @@ using System.Collections.Generic;
 
 public sealed class SecondMapQuestSet : IQuestSet
 {
+    private GameObject player;
+    public SecondMapQuestSet()
+    {
+        
+    }
+
     public string Name
     {
         get
@@ -15,25 +21,39 @@ public sealed class SecondMapQuestSet : IQuestSet
     public List<QuestTracker> GetQuests()
     {
         List<QuestTracker> q = new List<QuestTracker>();
-
+        player = GameObject.Find("Player");
         ConditionalQuestTracker c = new ConditionalQuestTracker("Steal 15 pizzas",
             new ConditionalQuestTracker.UpdateQuestStateDelegate(CheckPizzas));
+
+        q.Add(c);
 
         return q;
     }
 
     private void CheckPizzas(ref QuestState state)
     {
+        Debug.Log(player.GetComponent<PlayerBehaviour>().PizzaCount);
+        if (player.GetComponent<PlayerBehaviour>().PizzaCount >= 15)
+        {
+            state = QuestState.Completed;
 
+            
+        }
     }
 }
 
 
 public class PlayerBehaviour : MonoBehaviour {
 
-    private QuestLog log;
+    
 
     public float Speed = 5f;
+
+    public int PizzaCount
+    {
+        get;
+        set;
+    }
 
     public float Horizontal
     {
@@ -49,8 +69,6 @@ public class PlayerBehaviour : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        log = new QuestLog();
-
         Physics2D.gravity = new Vector3(0f, 0f, 0f);
         Physics2D.IgnoreCollision(transform.GetComponent<BoxCollider2D>(), transform.GetComponent<CircleCollider2D>());
 	}

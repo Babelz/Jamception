@@ -37,22 +37,6 @@ public sealed class FirstMapQuestSet : IQuestSet
     }
 }
 
-public struct QuestLabelModel
-{
-    public readonly string text;
-    public readonly Color color;
-    public readonly bool child;
-    public readonly Rect rect;
-
-    public QuestLabelModel(string text, Color color, bool child, Rect rect)
-    {
-        this.text = text;
-        this.color = color;
-        this.child = child;
-        this.rect = rect;
-    }
-}
-
 
 public sealed class QuestHUD : MonoBehaviour
 {
@@ -100,11 +84,11 @@ public sealed class QuestHUD : MonoBehaviour
             return;
         }
 
-        List<QuestTracker> quests = new List<QuestTracker>();
+        var q = set.GetQuests();
 
-        for (int i = 0; i < quests.Count; i++)
+        for (int i = 0; i < q.Count; i++)
         {
-            questLog.AddQuest(quests[i]);
+            questLog.AddQuest(q[i]);
         }
     }
 
@@ -126,15 +110,75 @@ public sealed class QuestHUD : MonoBehaviour
             return;
         }
     }
+
     private void OnGUI()
     {
-        // Trans where we want to draw our gui.
-        Transform transForm = playerCamera.transform;
+        int index = 0;
+
+        foreach (QuestTracker q in questLog)
+        {
+            float height = (new GUIStyle()).CalcSize(new GUIContent(" ")).y;
+            
+            Color c;
+            
+            switch (q.State)
+            {
+                case QuestState.Completed:
+                    c = Color.green;
+                    break;
+                case QuestState.Failed:
+                    c = Color.red;
+                    break;
+                case QuestState.InProgress:
+                default:
+                    c = Color.white;
+                    break;
+            }
+
+            GUIStyle s = new GUIStyle() { fontSize = 18 };
+            s.normal.textColor = c;
+
+            GUI.Label(new Rect(0f, height * index, 100f, height), q.Desc, s);
+
+            QuestLine l = q as QuestLine;
+
+            if (l != null)
+            {
+                index++;
+
+                float offset = 50f;
+
+                foreach (QuestTracker t in l.Quests())
+                {
+                    switch (t.State)
+                    {
+                        case QuestState.Completed:
+                            c = Color.green;
+                            break;
+                        case QuestState.Failed:
+                            c = Color.red;
+                            break;
+                        case QuestState.InProgress:
+                        default:
+                            c = Color.white;
+                            break;
+                    }
+
+                    s.normal.textColor = c;
+
+                    GUI.Label(new Rect(offset, index * height, 100f, height), l.Desc, s);
+
+                    index++;
+                }
+            }
+
+            index++;
+        }
     }
 	
 	// Update is called once per frame
 	private void Update() 
     {
-	    
+        questLog.Update();
 	}
 }

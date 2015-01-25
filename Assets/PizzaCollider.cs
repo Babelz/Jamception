@@ -21,6 +21,6 @@ public class PizzaCollider : MonoBehaviour {
         if (!table.HasPizza) return;
 
         table.PizzaBehaviour.GimmePizza();
-        //transform.parent.GetComponent<PlayerBehaviour>()
+        transform.GetComponent<PlayerBehaviour>().PizzaCount++;
     }
 }

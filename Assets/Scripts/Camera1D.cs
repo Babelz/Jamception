@@ -28,7 +28,7 @@ public class Camera1D : MonoBehaviour {
 
             if (((end.position + targetOffset) - transform.position).sqrMagnitude < 0.05)
             {
-                Application.LoadLevel(3);
+                Application.LoadLevel("text");
             }
         }
 	}

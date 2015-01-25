@@ -29,6 +29,8 @@ public class CameraMovement : MonoBehaviour {
 
                 if (((end.position) - transform.position).sqrMagnitude < 0.05)
                 {
+                    var g = GameObject.Find("TileMap");
+                    GameObject.DestroyImmediate(g); // no leaks
                     Application.LoadLevel("1D");
                 }
             }
